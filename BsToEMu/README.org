@@ -1,0 +1,4 @@
+There are 3 directories. 
+=plugin= includes all c++ code and =xml= file. 
+=python= dirctory includes two configuration files for interactiver run, one is for data and another is for MC. 
+Directory named =test= includes two files for job submission.
