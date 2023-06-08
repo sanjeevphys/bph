@@ -212,26 +212,27 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   
   const char *var1;
   auto trg_names = iEvent.triggerNames(*trg_res);
-  int hlt_passed=0, h1=0,h2=0,h3=0;
+  int hlt_passed=0;
   for(int ipath=0; ipath < nhlt; ++ipath){
     for(unsigned iname = 0; iname < trg_res->size(); ++iname){ //.triggerNames()
       std::string name = trg_names.triggerName(iname);
       var1 = name.c_str();
       if(strstr(var1, paths[ipath]) ){ // && (strlen(var1) - strlen(paths[ipath]) < 5) ){
 	//cout << "This is not testing: ";
-	if( trg_res -> accept(iname) && strstr(var1, "HLT_Mu7_IP4")){
-	  h1=1;
-	}
-	if( trg_res -> accept(iname) && strstr(var1, "HLT_Mu9_IP6")){
-	  h2=1;
-	}
-	if( trg_res -> accept(iname) && strstr(var1, "HLT_Mu12_IP6" )) h3=1;
+	if( trg_res -> accept(iname) && strstr(var1, "HLT_Mu7_IP4")) hlt_passed=1;
+	if( trg_res -> accept(iname) && strstr(var1, "HLT_Mu8_IP3")) hlt_passed=2;
+	if( trg_res -> accept(iname) && strstr(var1, "HLT_Mu8_IP5")) hlt_passed=3;
+	if( trg_res -> accept(iname) && strstr(var1, "HLT_Mu8_IP6")) hlt_passed=4;
+	if( trg_res -> accept(iname) && strstr(var1, "HLT_Mu8p5_IP3p5")) hlt_passed=5;
+	if( trg_res -> accept(iname) && strstr(var1, "HLT_Mu9_IP4")) hlt_passed=6;
+	if( trg_res -> accept(iname) && strstr(var1, "HLT_Mu9_IP5")) hlt_passed=7;
+	if( trg_res -> accept(iname) && strstr(var1, "HLT_Mu9_IP6")) hlt_passed=8;
+	if( trg_res -> accept(iname) && strstr(var1, "HLT_Mu10p5_IP3p5")) hlt_passed=9;
+	if( trg_res -> accept(iname) && strstr(var1, "HLT_Mu12_IP6")) hlt_passed=10;
       }
     }
   }
-  if(h3==1) hlt_passed=3; else if(h2==1)hlt_passed=2;else if(h1==1) hlt_passed=1; else return;
-
-  if( !hlt_passed ) { cout << "This is not needed any more\n"; return; }
+  if( !hlt_passed ) return; 
   hlt_path=hlt_passed;
   nn++;
   //cout << tobjs -> pt() << "  <--- Testing trigger mattching object size.\n"; // working but not correctly
@@ -240,9 +241,16 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
     //obj.unpackPathNames(trg_names);
     //std::cout << "\tTrigger object:  pt " << obj.pt() << ", eta " << obj.eta() << ", phi " << obj.phi() << std::endl;
     obj.unpackFilterLabels(iEvent, *trg_res);
-    if(obj.hasFilterLabel("hltL3fL1sMu22OrParkL1f0L2f10QL3Filtered7IP4Q") 
-       || obj.hasFilterLabel("hltL3fL1sMu22OrParkL1f0L2f10QL3Filtered9Q") 
-       || obj.hasFilterLabel("hltL3fL1sMu22OrParkL1f0L2f10QL3Filtered12Q")){// cout << "We found the filter...\n";
+    if(obj.hasFilterLabel("hltL3fL1sMu22OrParkL1f0L2f10QL3Filtered7IP4Q") ||
+       obj.hasFilterLabel("hltL3fL1sMu22OrParkL1f0L2f10QL3Filtered8Q") ||
+       obj.hasFilterLabel("hltL3fL1sMu22OrParkL1f0L2f10QL3Filtered8IP5Q") ||
+       obj.hasFilterLabel("hltL3fL1sMu22OrParkL1f0L2f10QL3Filtered8IP6Q") ||
+       obj.hasFilterLabel("hltL3fL1sMu22OrParkL1f0L2f10QL3Filtered8p5Q") ||
+       obj.hasFilterLabel("hltL3fL1sMu22OrParkL1f0L2f10QL3Filtered9IP4Q") ||
+       obj.hasFilterLabel("hltL3fL1sMu22OrParkL1f0L2f10QL3Filtered9IP5Q") ||
+       obj.hasFilterLabel("hltL3fL1sMu22OrParkL1f0L2f10QL3Filtered9Q") ||
+       obj.hasFilterLabel("hltL3fL1sMu22OrParkL1f0L2f10QL3Filtered10p5Q") ||
+       obj.hasFilterLabel("hltL3fL1sMu22OrParkL1f0L2f10QL3Filtered12Q") ){// cout << "We found the filter...\n";
       //good_tobjs.push_back(obj);
       //cout << nn <<'\t'<< hlt_passed << "\tTrigger object:  pt " << obj.pt() << ", eta " << obj.eta() << ", phi " << obj.phi() << endl;
       t_pt ->push_back(obj.pt());
@@ -316,19 +324,19 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
       ele4.SetXYZM(iE->px(), iE->py(), iE->pz(), el_mass);
       bcand=mu4+ele4;
 
-      auto bs_point = Vertex::Point( recoBeamSpotHandle -> x(pv.z()), recoBeamSpotHandle -> y(pv.z()), recoBeamSpotHandle -> z0() );
-      auto bs_error = recoBeamSpotHandle -> covariance3D();
+      auto pv_point = Vertex::Point( pv.x(), pv.y(), pv.z() );
+      auto pv_error = pv.error(); //pv.covariance3D();
       float chi2_temp=0, ndof_temp=0;
-      auto bs_temp = Vertex(bs_point, bs_error, chi2_temp, ndof_temp, 3);
+      auto pv_temp = Vertex(pv_point, pv_error, chi2_temp, ndof_temp, 3);
       
       TVector3 vect_l3d, vect_lxy, vect_pt, vect_p;
-      vect_l3d.SetXYZ(emuVtxFit.position().x() - bs_temp.position().x(),
-		      emuVtxFit.position().y() - bs_temp.position().y(),
-		      emuVtxFit.position().z() - bs_temp.position().z() );
-      vect_p.SetXYZ(bcand.Px(),bcand.Py(), bcand.Pz());
+      vect_l3d.SetXYZ(emuVtxFit.position().x() - pv_temp.position().x(),
+		      emuVtxFit.position().y() - pv_temp.position().y(),
+		      emuVtxFit.position().z() - pv_temp.position().z() );
+      vect_p.SetXYZ(bcand.Px(), bcand.Py(), bcand.Pz());
 
-      vect_lxy.SetXYZ(emuVtxFit.position().x() - bs_temp.position().x(),
-		      emuVtxFit.position().y() - bs_temp.position().y(),
+      vect_lxy.SetXYZ(emuVtxFit.position().x() - pv_temp.position().x(),
+		      emuVtxFit.position().y() - pv_temp.position().y(),
 		      0. );
       vect_pt.SetXYZ(bcand.Px(), bcand.Py(), 0. );
       
@@ -342,15 +350,16 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
       //if( iMu -> isPFMuon() ) { cout << "This is PF Muon\n"; } else { cout << "Not a PF Muon\n"; }
       //if( iMu -> isGlobalMuon() ) { cout << "This is Global Muon\n"; } else { cout << "Not a Global Muon\n"; }
-      bs_x -> push_back(bs_temp.position().x());
-      bs_y -> push_back(bs_temp.position().y());
+      //bs_x -> push_back(bs_temp.position().x());
+      //bs_y -> push_back(bs_temp.position().y());
       vx -> push_back(emuVtxFit.position().x());
       vy -> push_back(emuVtxFit.position().y());
       vz -> push_back(emuVtxFit.position().z());
       vtx_chi2 -> push_back(emuVtxFit.normalisedChiSquared());
-      vtx_prob -> push_back(1 - erfc(emuVtxFit.normalisedChiSquared() / sqrt(2)) /2 );
+      vtx_prob -> push_back(TMath::Prob(emuVtxFit.totalChiSquared(), emuVtxFit.degreesOfFreedom()));
+      // TMath::Prob(fChisquare,fNpfits-fNpar); // https://root.cern.ch/root/roottalk/roottalk01/4648.html 
 
-      auto llxy= VertexDistanceXY().distance(bs_temp, emuVtxFit.vertexState());
+      auto llxy= VertexDistanceXY().distance(pv_temp, emuVtxFit.vertexState());
       lxy -> push_back(llxy.value());
       lxy_err -> push_back(llxy.error());
       lxy_sig -> push_back(llxy.significance());
@@ -369,7 +378,7 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
       //del3d_sig
       //delz
       //delz_sig
-      auto ll3d = VertexDistance3D().distance(bs_temp, emuVtxFit.vertexState());
+      auto ll3d = VertexDistance3D().distance(pv_temp, emuVtxFit.vertexState());
       l3d -> push_back(ll3d.value());
       l3d_sig -> push_back(ll3d.significance());
 
@@ -405,9 +414,9 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
       mu_dz       -> push_back( iMu -> bestTrack() -> dz(pv.position()));
       mu_dz_e     -> push_back( iMu -> bestTrack() -> dzError());
       mu_dz_sig   -> push_back( iMu -> bestTrack() -> dz(pv.position()) / iMu -> bestTrack() -> dzError());
-      mu_bs_dxy   -> push_back( iMu -> bestTrack() -> dxy(bs_temp.position()));
-      mu_bs_dxy_e -> push_back( iMu -> bestTrack() -> dxyError(bs_temp.position(), bs_temp.error()));
-      mu_bs_dxy_sig-> push_back( iMu -> bestTrack() -> dxy(bs_temp.position()) / iMu -> bestTrack() -> dxyError(bs_temp.position(), bs_temp.error()) );
+      //mu_bs_dxy   -> push_back( iMu -> bestTrack() -> dxy(bs_temp.position()));
+      //mu_bs_dxy_e -> push_back( iMu -> bestTrack() -> dxyError(bs_temp.position(), bs_temp.error()));
+      //mu_bs_dxy_sig-> push_back( iMu -> bestTrack() -> dxy(bs_temp.position()) / iMu -> bestTrack() -> dxyError(bs_temp.position(), bs_temp.error()) );
       //mu_cov_pos_def-> push_back( is_pos_def( convert_cov( iMu -> bestTrack() -> covariance() ) ) );
       //cout << "Muon Track Isolation : " << utilityFuntions.computeTrkMuonIsolation( *iMu , *iE , *pfs , pvIndex ) << endl;
       mu_trkIsolation -> push_back( utilityFuntions.computeTrkMuonIsolation( *iMu , *iE , *pfs , pvIndex ) );
@@ -432,9 +441,9 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
       ele_dz -> push_back( iE -> gsfTrack() -> dz(pv.position()));
       ele_dz_e -> push_back( iE -> gsfTrack() -> dzError() ); //pv.position(),  pv.error() ) );
       ele_dz_sig -> push_back( iE -> gsfTrack() -> dz(pv.position()) / iE -> gsfTrack() -> dzError());
-      ele_bs_dxy -> push_back( iE -> gsfTrack() -> dxy(bs_temp.position()));
-      ele_bs_dxy_e -> push_back( iE -> gsfTrack() -> dxyError(bs_temp.position(), bs_temp.error()));
-      ele_bs_dxy_sig -> push_back( iE -> gsfTrack() -> dxy(bs_temp.position()) / iE -> gsfTrack() -> dxyError(bs_temp.position(), bs_temp.error()));
+      //ele_bs_dxy -> push_back( iE -> gsfTrack() -> dxy(bs_temp.position()));
+      //ele_bs_dxy_e -> push_back( iE -> gsfTrack() -> dxyError(bs_temp.position(), bs_temp.error()));
+      //ele_bs_dxy_sig -> push_back( iE -> gsfTrack() -> dxy(bs_temp.position()) / iE -> gsfTrack() -> dxyError(bs_temp.position(), bs_temp.error()));
       //ele_cov_pos_def -> push_back( iE -> ());
 
       //ncands,mcorr,charge,mu_cov_pos_def,ele_cov_pos_def
