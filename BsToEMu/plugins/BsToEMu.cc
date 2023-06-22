@@ -103,15 +103,15 @@ private:
 
   int run,lumi,event, npv,ncands, hlt_path;
   std::vector<float> *t_pt, *t_eta, *t_phi;
-  std::vector<float> *mass, *mcorr, *pt, *eta, *phi;
+  std::vector<float> *mass, *mcorr, *pt, *eta, *rap, *phi;
   std::vector<int> *charge;
   std::vector<float> *dr_mu, *dr_ele;
   std::vector<float> *pv_x, *pv_y, *pv_z; float bs_x0, bs_y0, bs_z0; std::vector<float> *bs_x, *bs_y, *vx, *vy, *vz;
   std::vector<float> *vtx_chi2, *vtx_prob, *cos2d, *lxy, *lxy_err, *lxy_sig, *alpha3d, *l3d, *l3d_err, *l3d_sig;
   std::vector<int> *pfmu, *globalMu;
-  std::vector<float> *mu_pt, *mu_eta, *mu_phi, *mu_e, *mu_mass, *mu_charge, *mu_id_loose, *mu_id_soft, *mu_id_medium, *mu_id_tight, *mu_id_soft_mva, *mu_dxy, *mu_dxy_e, *mu_dxy_sig, *mu_dz, *mu_dz_e,
+  std::vector<float> *mu_pt, *mu_eta, *mu_rap, *mu_phi, *mu_e, *mu_mass, *mu_charge, *mu_id_loose, *mu_id_soft, *mu_id_medium, *mu_id_tight, *mu_id_soft_mva, *mu_dxy, *mu_dxy_e, *mu_dxy_sig, *mu_dz, *mu_dz_e,
     *mu_dz_sig, *mu_pv_dxy, *mu_pv_dxy_e, *mu_pv_dxy_sig, *mu_cov_pos_def, *mu_trkIsolation, *mu_trk_chi2, *mu_trk_ndof;
-  std::vector<float> *ele_pt, *ele_eta, *ele_phi, *ele_e, *ele_mass, *ele_charge, *ele_id_iso_wp90, *ele_id_iso_wp80, *ele_id_iso_wpLoose, *ele_id_noIso_wp90, *ele_id_noIso_wp80, *ele_id_noIso_wpLoose, *ele_dxy, *ele_dxy_e, *ele_dxy_sig, *ele_dz, *ele_dz_e, *ele_dz_sig, *ele_pv_dxy, *ele_pv_dxy_e, *ele_pv_dxy_sig, *ele_cov_pos_def, *ele_trkIsolation, *ele_trk_chi2, *ele_trk_ndof;
+  std::vector<float> *ele_pt, *ele_eta, *ele_rap, *ele_phi, *ele_e, *ele_mass, *ele_charge, *ele_id_iso_wp90, *ele_id_iso_wp80, *ele_id_iso_wpLoose, *ele_id_noIso_wp90, *ele_id_noIso_wp80, *ele_id_noIso_wpLoose, *ele_dxy, *ele_dxy_e, *ele_dxy_sig, *ele_dz, *ele_dz_e, *ele_dz_sig, *ele_pv_dxy, *ele_pv_dxy_e, *ele_pv_dxy_sig, *ele_cov_pos_def, *ele_trkIsolation, *ele_trk_chi2, *ele_trk_ndof;
 };
 
 BsToEMu::BsToEMu(const edm::ParameterSet& iConfig):
@@ -135,7 +135,7 @@ BsToEMu::BsToEMu(const edm::ParameterSet& iConfig):
   nB(0), nn(0),
   run(0), lumi(0), event(0), npv(0), ncands(0), hlt_path(0), 
   t_pt(0), t_eta(0), t_phi(0),
-  mass(0), mcorr(0), pt(0), eta(0), phi(0), charge(0), dr_mu(0), dr_ele(0), pv_x(0), pv_y(0), pv_z(0), bs_x0(0), bs_y0(0), bs_z0(0), bs_x(0), bs_y(0), vx(0), vy(0), vz(0), vtx_chi2(0), vtx_prob(0), cos2d(0), lxy(0), lxy_err(0), lxy_sig(0), alpha3d(0), l3d(0), l3d_err(0), l3d_sig(0), pfmu(0), globalMu(0), mu_pt(0), mu_eta(0), mu_phi(0), mu_e(0), mu_mass(0), mu_charge(0), mu_id_loose(0), mu_id_soft(0), mu_id_medium(0), mu_id_tight(0), mu_id_soft_mva(0), mu_dxy(0), mu_dxy_e(0), mu_dxy_sig(0), mu_dz(0), mu_dz_e(0), mu_dz_sig(0), mu_pv_dxy(0), mu_pv_dxy_e(0), mu_pv_dxy_sig(0), mu_cov_pos_def(0), mu_trkIsolation(0), mu_trk_chi2(0), mu_trk_ndof(0), ele_pt(0), ele_eta(0), ele_phi(0), ele_e(0), ele_mass(0), ele_charge(0), ele_id_iso_wp90(0), ele_id_iso_wp80(0), ele_id_iso_wpLoose(0), ele_id_noIso_wp90(0), ele_id_noIso_wp80(0), ele_id_noIso_wpLoose(0), ele_dxy(0), ele_dxy_e(0), ele_dxy_sig(0), ele_dz(0), ele_dz_e(0), ele_dz_sig(0), ele_pv_dxy(0), ele_pv_dxy_e(0), ele_pv_dxy_sig(0), ele_cov_pos_def(0), ele_trkIsolation(0), ele_trk_chi2(0), ele_trk_ndof(0)
+  mass(0), mcorr(0), pt(0), eta(0), rap(0), phi(0), charge(0), dr_mu(0), dr_ele(0), pv_x(0), pv_y(0), pv_z(0), bs_x0(0), bs_y0(0), bs_z0(0), bs_x(0), bs_y(0), vx(0), vy(0), vz(0), vtx_chi2(0), vtx_prob(0), cos2d(0), lxy(0), lxy_err(0), lxy_sig(0), alpha3d(0), l3d(0), l3d_err(0), l3d_sig(0), pfmu(0), globalMu(0), mu_pt(0), mu_eta(0), mu_rap(0), mu_phi(0), mu_e(0), mu_mass(0), mu_charge(0), mu_id_loose(0), mu_id_soft(0), mu_id_medium(0), mu_id_tight(0), mu_id_soft_mva(0), mu_dxy(0), mu_dxy_e(0), mu_dxy_sig(0), mu_dz(0), mu_dz_e(0), mu_dz_sig(0), mu_pv_dxy(0), mu_pv_dxy_e(0), mu_pv_dxy_sig(0), mu_cov_pos_def(0), mu_trkIsolation(0), mu_trk_chi2(0), mu_trk_ndof(0), ele_pt(0), ele_eta(0), ele_rap(0), ele_phi(0), ele_e(0), ele_mass(0), ele_charge(0), ele_id_iso_wp90(0), ele_id_iso_wp80(0), ele_id_iso_wpLoose(0), ele_id_noIso_wp90(0), ele_id_noIso_wp80(0), ele_id_noIso_wpLoose(0), ele_dxy(0), ele_dxy_e(0), ele_dxy_sig(0), ele_dz(0), ele_dz_e(0), ele_dz_sig(0), ele_pv_dxy(0), ele_pv_dxy_e(0), ele_pv_dxy_sig(0), ele_cov_pos_def(0), ele_trkIsolation(0), ele_trk_chi2(0), ele_trk_ndof(0)
 {}
 
 BsToEMu::~BsToEMu(){}
@@ -284,7 +284,7 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
     //if( !hlt_passed ) continue;
     for(View<pat::Electron>::const_iterator iE = electrons->begin(); iE != electrons->end(); ++iE){
       if( (iMu -> charge()) * (iE->charge()) == 1 ) continue;
-      if( iMu  -> pt() < 4.0 || fabs(iMu -> eta()) > 2.5) continue;
+      if( iMu  -> pt() < 7.0 || fabs(iMu -> eta()) > 2.5) continue;
       if( iE -> pt() < 4.0 || fabs(iE -> eta()) > 2.5) continue;
 
       if( ! iMu -> bestTrack()) continue;
@@ -411,6 +411,7 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
       //mcorr -> push_back();
       pt    -> push_back( bcand.Pt());
       eta   -> push_back( bcand.Eta());
+      rap   -> push_back( bcand.Rapidity());
       phi   -> push_back( bcand.Phi());
       dr_mu -> push_back( bcand.DeltaR(mu4));
       dr_ele-> push_back( bcand.DeltaR(ele4));
@@ -420,6 +421,7 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
       mu_pt       -> push_back( iMu -> pt());
       mu_eta      -> push_back( iMu -> eta());
+      mu_rap      -> push_back( iMu -> rapidity());
       mu_phi      -> push_back( iMu -> phi());
       mu_e        -> push_back( iMu -> energy());
       mu_mass     -> push_back( iMu -> mass());
@@ -450,6 +452,7 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 	      
       ele_pt -> push_back( iE -> pt());
       ele_eta -> push_back( iE -> eta());
+      ele_rap -> push_back( iE -> rapidity());
       ele_phi -> push_back( iE -> phi());
       ele_e -> push_back( iE -> energy());
       ele_mass -> push_back( iE -> mass());
@@ -494,6 +497,7 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   //mcorr -> clear();
   pt    -> clear();
   eta   -> clear();
+  rap   -> clear();
   phi   -> clear();
   dr_mu -> clear();
   dr_ele-> clear();
@@ -527,6 +531,7 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   globalMu -> clear();
   mu_pt->clear();
   mu_eta      -> clear();
+  mu_rap      -> clear();
   mu_phi      -> clear();
   mu_e        -> clear();
   mu_mass     -> clear();
@@ -552,6 +557,7 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
   ele_pt -> clear();
   ele_eta -> clear();
+  ele_rap -> clear();
   ele_phi -> clear();
   ele_e -> clear();
   ele_mass -> clear();
@@ -601,6 +607,7 @@ void BsToEMu::beginJob() {
   tree -> Branch("mcorr", &mcorr );
   tree -> Branch("pt", &pt );
   tree -> Branch("eta", &eta );
+  tree -> Branch("rap", &rap );
   tree -> Branch("phi", &phi );
   tree -> Branch("charge", &charge );
   
@@ -633,6 +640,7 @@ void BsToEMu::beginJob() {
 
   tree -> Branch("mu_pt", &mu_pt );
   tree -> Branch("mu_eta", &mu_eta );
+  tree -> Branch("mu_rap", &mu_rap );
   tree -> Branch("mu_phi", &mu_phi );
   tree -> Branch("mu_e", &mu_e );
   tree -> Branch("mu_mass", &mu_mass );
@@ -658,6 +666,7 @@ void BsToEMu::beginJob() {
 
   tree -> Branch("ele_pt", &ele_pt );
   tree -> Branch("ele_eta", &ele_eta ); 
+  tree -> Branch("ele_rap", &ele_rap );
   tree -> Branch("ele_phi", &ele_phi );
   tree -> Branch("ele_e", &ele_e );
   tree -> Branch("ele_mass", &ele_mass );
