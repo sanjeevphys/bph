@@ -294,10 +294,16 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
       
       tracksTifit.push_back( *(iMu->bestTrack()) );
       tracksTifit.push_back( *(iE->gsfTrack() ) );
+
+      //cout << '(' << tracksTifit[0].pt() << ", " << iMu -> pt() << ") <== Just for testing...\n";
       //cout << '(' << tracksTifit[0].pt() << ", ";
       auto emuVtxFit = vtxfit.Fit( tracksTifit );
       //cout << tracksTifit[0].pt() << ") <== Just for testing...\n";  // tested, it is not changing here.
       if( ! emuVtxFit.isValid()) continue;
+      
+      auto refitemuvtx = emuVtxFit.refittedState();
+      cout << '(' << refitemuvtx[0].pt() << ", " << iMu  -> pt() << ") <== Just for testing...\n";;
+      //if ( fabs(refitemuvtx[0].pt() - iMu  -> pt()) > 1e-4) cout << "We can see the difference...\n";
 
       auto pv = (*primaryVertices)[0];
       int pvIndex=0;
