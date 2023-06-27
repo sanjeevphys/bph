@@ -21,12 +21,13 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
-#include "RecoEgamma/EgammaElectronAlgos/interface/GsfElectronAlgo.h"
-#include "DataFormats/ParticleFlowReco/interface/GsfPFRecTrack.h"
+//#include "RecoEgamma/EgammaElectronAlgos/interface/GsfElectronAlgo.h"
+//#include "DataFormats/ParticleFlowReco/interface/GsfPFRecTrack.h"
 #include "TrackingTools/GsfTools/interface/MultiTrajectoryStateTransform.h"
 #include "TrackingTools/GsfTools/interface/MultiTrajectoryStateMode.h"
-#include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
-#include "DataFormats/EgammaCandidates/interface/GsfElectronCore.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+//#include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
+//#include "DataFormats/EgammaCandidates/interface/GsfElectronCore.h"
 #include "DataFormats/RecoCandidate/interface/RecoCandidate.h"
 #include "DataFormats/GsfTrackReco/interface/GsfTrackFwd.h"
 //#include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
@@ -287,22 +288,37 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
       if( iMu  -> pt() < 7.0 || fabs(iMu -> eta()) > 2.5) continue;
       if( iE -> pt() < 4.0 || fabs(iE -> eta()) > 2.5) continue;
 
+      //if(iE -> track().isNonnull())cout << "Track: " << (int)iE -> gsfTrack().isNonnull() << (int)iE -> track().isNonnull() << "=\t=";
+
       if( ! iMu -> bestTrack()) continue;
       if( ! iE -> gsfTrack().isNonnull() ) continue;
        
+      if( ! iE -> closestCtfTrackRef().isNonnull() ) { 
+	cout << " not working this time....\n";
+	continue;
+      }
+
       tracksTifit.clear();
       
       tracksTifit.push_back( *(iMu->bestTrack()) );
-      tracksTifit.push_back( *(iE->gsfTrack() ) );
+      //tracksTifit.push_back( *(iE->gsfTrack() ) );
+      tracksTifit.push_back( *(iE-> closestCtfTrackRef()) );
+      //tracksTifit.push_back( *(iE->track() ) );
 
       //cout << '(' << tracksTifit[0].pt() << ", " << iMu -> pt() << ") <== Just for testing...\n";
       //cout << '(' << tracksTifit[0].pt() << ", ";
       auto emuVtxFit = vtxfit.Fit( tracksTifit );
       //cout << tracksTifit[0].pt() << ") <== Just for testing...\n";  // tested, it is not changing here.
       if( ! emuVtxFit.isValid()) continue;
+      cout << (int)emuVtxFit.hasRefittedTracks() << '\t' << (int)emuVtxFit.hasTrackWeight() << endl;
+      //cout << (int)tracksTifit.hasRefittedTracks() << endl;
       
-      auto refitemuvtx = emuVtxFit.refittedState();
-      cout << '(' << refitemuvtx[0].pt() << ", " << iMu  -> pt() << ") <== Just for testing...\n";;
+      auto refitemuvtx = emuVtxFit.refittedTracks();
+      //auto refitemuvtx = emuVtxFit.originalTracks();
+      cout << '(' << refitemuvtx.size() << ", " << iMu  -> pt() << ") ("
+	   << iE -> closestCtfTrackRef() -> pt() << ", " << iE -> pt() << ", " << iE -> gsfTrack() -> pt() << ") <== Just for testing...\n"; // diff
+
+      //cout << "For muon: (" << iMu->bestTrack() -> pt() << ", " << iMu->pt() << ")\n"; // both same
       //if ( fabs(refitemuvtx[0].pt() - iMu  -> pt()) > 1e-4) cout << "We can see the difference...\n";
 
       auto pv = (*primaryVertices)[0];
