@@ -25,6 +25,8 @@ class Utilities {
 			       unsigned int primaryVertexIndex, float minPt=0.5, float dR=0.5,
 			       std::vector<const pat::PackedCandidate*> ignoreTracks = std::vector<const pat::PackedCandidate*>());
 };
+
+// https://github.com/drkovalskyi/Bmm5/blob/origin/RunII-NanoAODv8/NanoAOD/plugins/BxToMuMuProducer.cc#L861-L887 
 float Utilities::computeTrkMuonIsolation(const pat::Muon& the_muon, 
 					 const pat::Electron& the_electron, 
 					 std::vector<pat::PackedCandidate> pfCandidates,
