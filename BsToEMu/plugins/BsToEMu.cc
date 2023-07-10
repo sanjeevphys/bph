@@ -9,7 +9,7 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 
-#include "DataFormats/PatCandidates/interface/PackedCandidate.h" // muy importante para MiniAOD
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h" // muy importante para MiniAOD (in English: very important for MiniAOD)
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
@@ -21,11 +21,10 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
-//#include "RecoEgamma/EgammaElectronAlgos/interface/GsfElectronAlgo.h"
-//#include "DataFormats/ParticleFlowReco/interface/GsfPFRecTrack.h"
+#include "RecoEgamma/EgammaElectronAlgos/interface/GsfElectronAlgo.h"
+#include "DataFormats/ParticleFlowReco/interface/GsfPFRecTrack.h"
 #include "TrackingTools/GsfTools/interface/MultiTrajectoryStateTransform.h"
 #include "TrackingTools/GsfTools/interface/MultiTrajectoryStateMode.h"
-#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 //#include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 //#include "DataFormats/EgammaCandidates/interface/GsfElectronCore.h"
 #include "DataFormats/RecoCandidate/interface/RecoCandidate.h"
@@ -57,9 +56,6 @@
 #include "TrackingTools/IPTools/interface/IPTools.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/Math/interface/deltaR.h"
-
-// added new line for LumiDetails from GM
-#include "DataFormats/Luminosity/interface/LumiDetails.h"
 
 #include "TLorentzVector.h"
 #include "KVFitter.h"
@@ -104,15 +100,17 @@ private:
 
   int run,lumi,event, npv,ncands, hlt_path;
   std::vector<float> *t_pt, *t_eta, *t_phi;
-  std::vector<float> *mass, *mcorr, *pt, *eta, *rap, *phi;
+  std::vector<float> *mass, *mcorr, *pt, *eta, *phi;
   std::vector<int> *charge;
   std::vector<float> *dr_mu, *dr_ele;
   std::vector<float> *pv_x, *pv_y, *pv_z; float bs_x0, bs_y0, bs_z0; std::vector<float> *bs_x, *bs_y, *vx, *vy, *vz;
-  std::vector<float> *vtx_chi2, *vtx_prob, *cos2d, *lxy, *lxy_err, *lxy_sig, *alpha3d, *l3d, *l3d_err, *l3d_sig;
+  std::vector<float> *vtx_chi2, *vtx_prob, *cos2d, *lxy, *lxy_err, *lxy_sig;
   std::vector<int> *pfmu, *globalMu;
-  std::vector<float> *mu_pt, *mu_eta, *mu_rap, *mu_phi, *mu_e, *mu_mass, *mu_charge, *mu_id_loose, *mu_id_soft, *mu_id_medium, *mu_id_tight, *mu_id_soft_mva, *mu_dxy, *mu_dxy_e, *mu_dxy_sig, *mu_dz, *mu_dz_e,
-    *mu_dz_sig, *mu_pv_dxy, *mu_pv_dxy_e, *mu_pv_dxy_sig, *mu_cov_pos_def, *mu_trkIsolation, *mu_trk_chi2, *mu_trk_ndof;
-  std::vector<float> *ele_pt, *ele_eta, *ele_rap, *ele_phi, *ele_e, *ele_mass, *ele_charge, *ele_id_iso_wp90, *ele_id_iso_wp80, *ele_id_iso_wpLoose, *ele_id_noIso_wp90, *ele_id_noIso_wp80, *ele_id_noIso_wpLoose, *ele_dxy, *ele_dxy_e, *ele_dxy_sig, *ele_dz, *ele_dz_e, *ele_dz_sig, *ele_pv_dxy, *ele_pv_dxy_e, *ele_pv_dxy_sig, *ele_cov_pos_def, *ele_trkIsolation, *ele_trk_chi2, *ele_trk_ndof;
+  std::vector<float> *mu_pt, *mu_eta, *mu_phi, *mu_e, *mu_mass, *mu_charge, *mu_id_loose, *mu_id_soft, *mu_id_medium, *mu_id_tight, *mu_id_soft_mva, *mu_dxy, *mu_dxy_e, *mu_dxy_sig, *mu_dz, *mu_dz_e,
+    *mu_dz_sig, *mu_bs_dxy, *mu_bs_dxy_e, *mu_bs_dxy_sig, *mu_cov_pos_def, *mu_trkIsolation;
+  std::vector<float> *mu_trk_chi2, *mu_trk_ndof, *mu_trk_prob;
+  std::vector<float> *ele_pt, *ele_eta, *ele_phi, *ele_e, *ele_mass, *ele_charge, *ele_id_iso_wp90, *ele_id_iso_wp80, *ele_id_iso_wpLoose, *ele_id_iso, *ele_id_noIso, *ele_id_noIso_wp90, *ele_id_noIso_wp80, *ele_id_noIso_wpLoose, *ele_dxy, *ele_dxy_e, *ele_dxy_sig, *ele_dz, *ele_dz_e, *ele_dz_sig, *ele_bs_dxy, *ele_bs_dxy_e, *ele_bs_dxy_sig, *ele_cov_pos_def, *ele_trkIsolation;
+  std::vector<float> *ele_sigmaietaieta, *ele_trk_chi2, *ele_trk_ndof, *ele_trk_prob;
 };
 
 BsToEMu::BsToEMu(const edm::ParameterSet& iConfig):
@@ -136,7 +134,7 @@ BsToEMu::BsToEMu(const edm::ParameterSet& iConfig):
   nB(0), nn(0),
   run(0), lumi(0), event(0), npv(0), ncands(0), hlt_path(0), 
   t_pt(0), t_eta(0), t_phi(0),
-  mass(0), mcorr(0), pt(0), eta(0), rap(0), phi(0), charge(0), dr_mu(0), dr_ele(0), pv_x(0), pv_y(0), pv_z(0), bs_x0(0), bs_y0(0), bs_z0(0), bs_x(0), bs_y(0), vx(0), vy(0), vz(0), vtx_chi2(0), vtx_prob(0), cos2d(0), lxy(0), lxy_err(0), lxy_sig(0), alpha3d(0), l3d(0), l3d_err(0), l3d_sig(0), pfmu(0), globalMu(0), mu_pt(0), mu_eta(0), mu_rap(0), mu_phi(0), mu_e(0), mu_mass(0), mu_charge(0), mu_id_loose(0), mu_id_soft(0), mu_id_medium(0), mu_id_tight(0), mu_id_soft_mva(0), mu_dxy(0), mu_dxy_e(0), mu_dxy_sig(0), mu_dz(0), mu_dz_e(0), mu_dz_sig(0), mu_pv_dxy(0), mu_pv_dxy_e(0), mu_pv_dxy_sig(0), mu_cov_pos_def(0), mu_trkIsolation(0), mu_trk_chi2(0), mu_trk_ndof(0), ele_pt(0), ele_eta(0), ele_rap(0), ele_phi(0), ele_e(0), ele_mass(0), ele_charge(0), ele_id_iso_wp90(0), ele_id_iso_wp80(0), ele_id_iso_wpLoose(0), ele_id_noIso_wp90(0), ele_id_noIso_wp80(0), ele_id_noIso_wpLoose(0), ele_dxy(0), ele_dxy_e(0), ele_dxy_sig(0), ele_dz(0), ele_dz_e(0), ele_dz_sig(0), ele_pv_dxy(0), ele_pv_dxy_e(0), ele_pv_dxy_sig(0), ele_cov_pos_def(0), ele_trkIsolation(0), ele_trk_chi2(0), ele_trk_ndof(0)
+  mass(0), mcorr(0), pt(0), eta(0), phi(0), charge(0), dr_mu(0), dr_ele(0), pv_x(0), pv_y(0), pv_z(0), bs_x0(0), bs_y0(0), bs_z0(0), bs_x(0), bs_y(0), vx(0), vy(0), vz(0), vtx_chi2(0), vtx_prob(0), cos2d(0), lxy(0), lxy_err(0), lxy_sig(0), pfmu(0), globalMu(0), mu_pt(0), mu_eta(0), mu_phi(0), mu_e(0), mu_mass(0), mu_charge(0), mu_id_loose(0), mu_id_soft(0), mu_id_medium(0), mu_id_tight(0), mu_id_soft_mva(0), mu_dxy(0), mu_dxy_e(0), mu_dxy_sig(0), mu_dz(0), mu_dz_e(0), mu_dz_sig(0), mu_bs_dxy(0), mu_bs_dxy_e(0), mu_bs_dxy_sig(0), mu_cov_pos_def(0), mu_trkIsolation(0), mu_trk_chi2(0), mu_trk_ndof(0), mu_trk_prob(0), ele_pt(0), ele_eta(0), ele_phi(0), ele_e(0), ele_mass(0), ele_charge(0), ele_id_iso_wp90(0), ele_id_iso_wp80(0), ele_id_iso_wpLoose(0), ele_id_iso(0), ele_id_noIso(0), ele_id_noIso_wp90(0), ele_id_noIso_wp80(0), ele_id_noIso_wpLoose(0), ele_dxy(0), ele_dxy_e(0), ele_dxy_sig(0), ele_dz(0), ele_dz_e(0), ele_dz_sig(0), ele_bs_dxy(0), ele_bs_dxy_e(0), ele_bs_dxy_sig(0), ele_cov_pos_def(0), ele_trkIsolation(0), ele_sigmaietaieta(0), ele_trk_chi2(0), ele_trk_ndof(0), ele_trk_prob(0)
 {}
 
 BsToEMu::~BsToEMu(){}
@@ -186,21 +184,6 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
   iEvent.getByToken(beamSpotToken_, recoBeamSpotHandle );
   //beamSpot = beamSpotHandle.product();
-  
-  // trying to get instantaneous luminosity
-  /*if (!isMC_){
-    int inslumi=0.;
-    edm::Handle<LumiDetails> lumid;
-    iEvent.getLuminosityBlock().getByLabel("lumiProducer",lumid);
-    //iEvent.getLuminosityBlock().getByToken("lumiProducer",lumid);
-    // Check that there is something
-    if (!lumid.isValid())  return;//sar Lumidetails 111013
-    //sar Lumidetails 111013
-    //if (lumid.isValid()){
-    //use lumid
-    inslumi=lumid->lumiValue(LumiDetails::kOCC1,iEvent.bunchCrossing())*6.37;
-    cout << "Inst Lumi: " << inslumi <<endl;
-  }*/
 
   bs_x0 = recoBeamSpotHandle -> x0();
   bs_y0 = recoBeamSpotHandle -> y0();
@@ -285,43 +268,23 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
     //if( !hlt_passed ) continue;
     for(View<pat::Electron>::const_iterator iE = electrons->begin(); iE != electrons->end(); ++iE){
       if( (iMu -> charge()) * (iE->charge()) == 1 ) continue;
-      if( iMu  -> pt() < 7.0 || fabs(iMu -> eta()) > 2.5) continue;
+      if( iMu  -> pt() < 4.0 || fabs(iMu -> eta()) > 2.5) continue;
       if( iE -> pt() < 4.0 || fabs(iE -> eta()) > 2.5) continue;
-
-      //if(iE -> track().isNonnull())cout << "Track: " << (int)iE -> gsfTrack().isNonnull() << (int)iE -> track().isNonnull() << "=\t=";
 
       if( ! iMu -> bestTrack()) continue;
       if( ! iE -> gsfTrack().isNonnull() ) continue;
        
-      if( ! iE -> closestCtfTrackRef().isNonnull() ) { 
-	cout << " not working this time....\n";
-	continue;
-      }
-
       tracksTifit.clear();
       
       tracksTifit.push_back( *(iMu->bestTrack()) );
-      //tracksTifit.push_back( *(iE->gsfTrack() ) );
-      tracksTifit.push_back( *(iE-> closestCtfTrackRef()) );
-      //tracksTifit.push_back( *(iE->track() ) );
-
-      //cout << '(' << tracksTifit[0].pt() << ", " << iMu -> pt() << ") <== Just for testing...\n";
-      //cout << '(' << tracksTifit[0].pt() << ", ";
+      tracksTifit.push_back( *(iE->gsfTrack() ) );
       auto emuVtxFit = vtxfit.Fit( tracksTifit );
-      //cout << tracksTifit[0].pt() << ") <== Just for testing...\n";  // tested, it is not changing here.
       if( ! emuVtxFit.isValid()) continue;
-      cout << (int)emuVtxFit.hasRefittedTracks() << '\t' << (int)emuVtxFit.hasTrackWeight() << endl;
-      //cout << (int)tracksTifit.hasRefittedTracks() << endl;
-      
-      auto refitemuvtx = emuVtxFit.refittedTracks();
-      //auto refitemuvtx = emuVtxFit.originalTracks();
-      cout << '(' << refitemuvtx.size() << ", " << iMu  -> pt() << ") ("
-	   << iE -> closestCtfTrackRef() -> pt() << ", " << iE -> pt() << ", " << iE -> gsfTrack() -> pt() << ") <== Just for testing...\n"; // diff
-
-      //cout << "For muon: (" << iMu->bestTrack() -> pt() << ", " << iMu->pt() << ")\n"; // both same
-      //if ( fabs(refitemuvtx[0].pt() - iMu  -> pt()) > 1e-4) cout << "We can see the difference...\n";
 
       auto pv = (*primaryVertices)[0];
+      //float trkWt = iMu ->bestTrack() -> vertexWeight(pv); //.trackWeight(*(iMu));
+      float trkWt = pv.trackWeight(*(iMu->innerTrack()));
+      cout << "LLLLLLLLLLLLLLLLLLLL: " << trkWt << endl;
       int pvIndex=0;
       double dz_mu0 = fabs(iMu -> bestTrack() -> dz(pv.position()));
       for(int ivtx = 1; ivtx < npv; ++ivtx ){
@@ -366,19 +329,14 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
       ele4.SetXYZM(iE->px(), iE->py(), iE->pz(), el_mass);
       bcand=mu4+ele4;
 
-      auto pv_point = Vertex::Point( pv.x(), pv.y(), pv.z() );
-      auto pv_error = pv.error(); //pv.covariance3D();
+      auto bs_point = Vertex::Point( recoBeamSpotHandle -> x(pv.z()), recoBeamSpotHandle -> y(pv.z()), recoBeamSpotHandle -> z0() );
+      auto bs_error = recoBeamSpotHandle -> covariance3D();
       float chi2_temp=0, ndof_temp=0;
-      auto pv_temp = Vertex(pv_point, pv_error, chi2_temp, ndof_temp, 3);
+      auto bs_temp = Vertex(bs_point, bs_error, chi2_temp, ndof_temp, 3);
       
-      TVector3 vect_l3d, vect_lxy, vect_pt, vect_p;
-      vect_l3d.SetXYZ(emuVtxFit.position().x() - pv_temp.position().x(),
-		      emuVtxFit.position().y() - pv_temp.position().y(),
-		      emuVtxFit.position().z() - pv_temp.position().z() );
-      vect_p.SetXYZ(bcand.Px(), bcand.Py(), bcand.Pz());
-
-      vect_lxy.SetXYZ(emuVtxFit.position().x() - pv_temp.position().x(),
-		      emuVtxFit.position().y() - pv_temp.position().y(),
+      TVector3 vect_lxy, vect_pt;
+      vect_lxy.SetXYZ(emuVtxFit.position().x() - bs_temp.position().x(),
+		      emuVtxFit.position().y() - bs_temp.position().y(),
 		      0. );
       vect_pt.SetXYZ(bcand.Px(), bcand.Py(), 0. );
       
@@ -389,11 +347,11 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
       if ( bcand.M()<4. || bcand.M()>7. ) continue;
       cos2d -> push_back( vtxCos );
-  
+
       //if( iMu -> isPFMuon() ) { cout << "This is PF Muon\n"; } else { cout << "Not a PF Muon\n"; }
       //if( iMu -> isGlobalMuon() ) { cout << "This is Global Muon\n"; } else { cout << "Not a Global Muon\n"; }
-      bs_x -> push_back(recoBeamSpotHandle -> x(pv.z()));
-      bs_y -> push_back(recoBeamSpotHandle -> y(pv.z()));
+      bs_x -> push_back(bs_temp.position().x());
+      bs_y -> push_back(bs_temp.position().y());
       vx -> push_back(emuVtxFit.position().x());
       vy -> push_back(emuVtxFit.position().y());
       vz -> push_back(emuVtxFit.position().z());
@@ -401,30 +359,17 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
       vtx_prob -> push_back(TMath::Prob(emuVtxFit.totalChiSquared(), emuVtxFit.degreesOfFreedom()));
       // TMath::Prob(fChisquare,fNpfits-fNpar); // https://root.cern.ch/root/roottalk/roottalk01/4648.html 
 
-      auto llxy= VertexDistanceXY().distance(pv_temp, emuVtxFit.vertexState());
+      auto llxy= VertexDistanceXY().distance(bs_temp, emuVtxFit.vertexState());
       lxy -> push_back(llxy.value());
       lxy_err -> push_back(llxy.error());
       lxy_sig -> push_back(llxy.significance());
 
       //cout << "Testing some variables whether those are working....\n";
-      alpha3d -> push_back( vect_l3d.Angle(vect_p) );
-      //del3d
       //reco::TransientTrack tk_mu = vtxfit.getTransientTrack(iMu->track());
       //reco::TransientTrack tk_e = vtxfit.getTransientTrack(iE->gsfTrack());
       //reco::TransientTrack tk_e = tracksTifit.build(iE->gsfTrack());
-      //std::pair<bool, Measurement1D> ip3dpv_mu = IPTools::absoluteImpactParameter3D(tk_mu, pv);
-      //std::pair<bool, Measurement1D> ip3dpv_e = IPTools::absoluteImpactParameter3D(tk_e, pv);
-      //double d03d_mu = ip3dpv_mu.second.value();
-      //double d03d_e = ip3dpv_e.second.value();
-      //cout << d03d_mu << '\t' << d03d_e << '\t' << d03d_mu - d03d_e << '\n';
-      //del3d_sig
       //delz
       //delz_sig
-      auto ll3d = VertexDistance3D().distance(pv_temp, emuVtxFit.vertexState());
-      l3d -> push_back(ll3d.value());
-      l3d_err -> push_back(ll3d.error());
-      l3d_sig -> push_back(ll3d.significance());
-
       pv_x -> push_back(pv.position().x());
       pv_y -> push_back(pv.position().y());
       pv_z -> push_back(pv.position().z());
@@ -433,7 +378,6 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
       //mcorr -> push_back();
       pt    -> push_back( bcand.Pt());
       eta   -> push_back( bcand.Eta());
-      rap   -> push_back( bcand.Rapidity());
       phi   -> push_back( bcand.Phi());
       dr_mu -> push_back( bcand.DeltaR(mu4));
       dr_ele-> push_back( bcand.DeltaR(ele4));
@@ -443,7 +387,6 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
       mu_pt       -> push_back( iMu -> pt());
       mu_eta      -> push_back( iMu -> eta());
-      mu_rap      -> push_back( iMu -> rapidity());
       mu_phi      -> push_back( iMu -> phi());
       mu_e        -> push_back( iMu -> energy());
       mu_mass     -> push_back( iMu -> mass());
@@ -459,22 +402,20 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
       mu_dz       -> push_back( iMu -> bestTrack() -> dz(pv.position()));
       mu_dz_e     -> push_back( iMu -> bestTrack() -> dzError());
       mu_dz_sig   -> push_back( iMu -> bestTrack() -> dz(pv.position()) / iMu -> bestTrack() -> dzError());
-      mu_pv_dxy   -> push_back( iMu -> bestTrack() -> dxy(pv_temp.position()));
-      mu_pv_dxy_e -> push_back( iMu -> bestTrack() -> dxyError(pv_temp.position(), pv_temp.error()));
-      mu_pv_dxy_sig-> push_back( iMu -> bestTrack() -> dxy(pv_temp.position()) / iMu -> bestTrack() -> dxyError(pv_temp.position(), pv_temp.error()) );
+      mu_bs_dxy   -> push_back( iMu -> bestTrack() -> dxy(bs_temp.position()));
+      mu_bs_dxy_e -> push_back( iMu -> bestTrack() -> dxyError(bs_temp.position(), bs_temp.error()));
+      mu_bs_dxy_sig-> push_back( iMu -> bestTrack() -> dxy(bs_temp.position()) / iMu -> bestTrack() -> dxyError(bs_temp.position(), bs_temp.error()) );
       //mu_cov_pos_def-> push_back( is_pos_def( convert_cov( iMu -> bestTrack() -> covariance() ) ) );
       //cout << "Muon Track Isolation : " << utilityFuntions.computeTrkMuonIsolation( *iMu , *iE , *pfs , pvIndex ) << endl;
-      mu_trkIsolation -> push_back( utilityFuntions.computeTrkMuonIsolation( *iMu , *iE , *pfs , pvIndex ) );
-      //cout << "Muon track chisquare and dof (track): " << iMu->track()->chi2() << '\t' << iMu->track()->ndof() <<endl;
-      //cout << "Muon track chisquare and dof (best): " << iMu->bestTrack()->chi2() << '\t' << iMu->bestTrack()->ndof() <<endl;
       mu_trk_chi2 -> push_back( iMu->bestTrack()->chi2() );
       mu_trk_ndof -> push_back( iMu->bestTrack()->ndof() );
+      //mu_trk_prob -> push_back( TMath::Prob(iMu->bestTrack()->totalChiSquared(), iMu->bestTrack()->degreesOfFreedom() ) );
+      mu_trk_prob -> push_back( TMath::Prob(iMu->bestTrack()->chi2(), iMu->bestTrack()->ndof() ) );
+      mu_trkIsolation -> push_back( utilityFuntions.computeTrkMuonIsolation( *iMu , *iE , *pfs , pvIndex ) );
       //cout << iE->pfIsolationVariables() << endl;
-      ele_trkIsolation -> push_back( utilityFuntions.computeTrkEleIsolation( *iE, *iMu, *pfs, pvIndex ));
 	      
       ele_pt -> push_back( iE -> pt());
       ele_eta -> push_back( iE -> eta());
-      ele_rap -> push_back( iE -> rapidity());
       ele_phi -> push_back( iE -> phi());
       ele_e -> push_back( iE -> energy());
       ele_mass -> push_back( iE -> mass());
@@ -482,6 +423,11 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
       ele_id_iso_wp90 -> push_back( iE -> electronID("mvaEleID-Fall17-iso-V2-wp90"));
       ele_id_iso_wp80 -> push_back( iE -> electronID("mvaEleID-Fall17-iso-V2-wp80"));
       ele_id_iso_wpLoose -> push_back( iE -> electronID("mvaEleID-Fall17-iso-V2-wpLoose"));
+      //cout << "ele_id_iso_wpLoose -> push_back( " << iE -> electronID("mvaEleID-Fall17-iso-V1") << " )\n"; // not working
+      //cout << "  ===========================>>>>>> " << iE->userFloat("ElectronMVAEstimatorRun2Fall17IsoV2Values") <<endl;
+      //cout << "  ===========================>>>>>> " << iE->userFloat("mvaEleID-Fall17-iso-V2Value") <<endl; // not working
+      ele_id_iso -> push_back(iE->userFloat("ElectronMVAEstimatorRun2Fall17IsoV2Values"));
+      ele_id_noIso -> push_back(iE->userFloat("ElectronMVAEstimatorRun2Fall17NoIsoV2Values"));
       ele_id_noIso_wp90 -> push_back( iE -> electronID("mvaEleID-Fall17-noIso-V2-wp90"));
       ele_id_noIso_wp80 -> push_back( iE -> electronID("mvaEleID-Fall17-noIso-V2-wp80"));
       ele_id_noIso_wpLoose -> push_back( iE -> electronID("mvaEleID-Fall17-noIso-V2-wpLoose"));
@@ -491,13 +437,16 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
       ele_dz -> push_back( iE -> gsfTrack() -> dz(pv.position()));
       ele_dz_e -> push_back( iE -> gsfTrack() -> dzError() ); //pv.position(),  pv.error() ) );
       ele_dz_sig -> push_back( iE -> gsfTrack() -> dz(pv.position()) / iE -> gsfTrack() -> dzError());
-      ele_pv_dxy -> push_back( iE -> gsfTrack() -> dxy(pv_temp.position()));
-      ele_pv_dxy_e -> push_back( iE -> gsfTrack() -> dxyError(pv_temp.position(), pv_temp.error()));
-      ele_pv_dxy_sig -> push_back( iE -> gsfTrack() -> dxy(pv_temp.position()) / iE -> gsfTrack() -> dxyError(pv_temp.position(), pv_temp.error()));
+      ele_bs_dxy -> push_back( iE -> gsfTrack() -> dxy(bs_temp.position()));
+      ele_bs_dxy_e -> push_back( iE -> gsfTrack() -> dxyError(bs_temp.position(), bs_temp.error()));
+      ele_bs_dxy_sig -> push_back( iE -> gsfTrack() -> dxy(bs_temp.position()) / iE -> gsfTrack() -> dxyError(bs_temp.position(), bs_temp.error()));
       //ele_cov_pos_def -> push_back( iE -> ());
-      //cout << "Electron track goodness: " << iE->gsfTrack()->chi2() << '\t' << iE->gsfTrack()->ndof() << endl;
+      ele_trkIsolation -> push_back( utilityFuntions.computeTrkEleIsolation( *iE, *iMu, *pfs, pvIndex ));
+      ele_sigmaietaieta -> push_back( iE -> full5x5_sigmaIetaIeta() );
       ele_trk_chi2 -> push_back( iE->gsfTrack()->chi2() );
       ele_trk_ndof -> push_back( iE->gsfTrack()->ndof() );
+      //ele_trk_prob -> push_back(TMath::Prob(iE->gsfTrack()->totalChiSquared(), iE->gsfTrack()->degreesOfFreedom() ) );
+      ele_trk_prob -> push_back(TMath::Prob(iE->gsfTrack()->chi2(), iE->gsfTrack()->ndof() ) );
 
       //ncands,mcorr,charge,mu_cov_pos_def,ele_cov_pos_def
       nB++;
@@ -519,7 +468,6 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   //mcorr -> clear();
   pt    -> clear();
   eta   -> clear();
-  rap   -> clear();
   phi   -> clear();
   dr_mu -> clear();
   dr_ele-> clear();
@@ -540,20 +488,10 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   lxy_err -> clear();
   lxy_sig -> clear();
 
-  alpha3d -> clear();
-  //del3d -> clear();
-  //del3d_sig -> clear();
-  //delz -> clear();
-  //delz_sig -> clear();
-  l3d -> clear();
-  l3d_err -> clear();
-  l3d_sig -> clear();
-
   pfmu -> clear();
   globalMu -> clear();
   mu_pt->clear();
   mu_eta      -> clear();
-  mu_rap      -> clear();
   mu_phi      -> clear();
   mu_e        -> clear();
   mu_mass     -> clear();
@@ -569,17 +507,17 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   mu_dz       -> clear();
   mu_dz_e     -> clear();
   mu_dz_sig   -> clear();
-  mu_pv_dxy   -> clear();
-  mu_pv_dxy_e -> clear();
-  mu_pv_dxy_sig -> clear();
+  mu_bs_dxy   -> clear();
+  mu_bs_dxy_e -> clear();
+  mu_bs_dxy_sig -> clear();
   mu_cov_pos_def -> clear();
   mu_trkIsolation -> clear();
   mu_trk_chi2     -> clear();
   mu_trk_ndof     -> clear();
+  mu_trk_prob     -> clear();
 
   ele_pt -> clear();
   ele_eta -> clear();
-  ele_rap -> clear();
   ele_phi -> clear();
   ele_e -> clear();
   ele_mass -> clear();
@@ -587,6 +525,8 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   ele_id_iso_wp90 -> clear();
   ele_id_iso_wp80 -> clear();
   ele_id_iso_wpLoose -> clear();
+  ele_id_iso -> clear();
+  ele_id_noIso -> clear();
   ele_id_noIso_wp90 -> clear();
   ele_id_noIso_wp80 -> clear();
   ele_id_noIso_wpLoose -> clear();
@@ -596,13 +536,15 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   ele_dz -> clear();
   ele_dz_e -> clear();
   ele_dz_sig -> clear();
-  ele_pv_dxy -> clear();
-  ele_pv_dxy_e -> clear();
-  ele_pv_dxy_sig -> clear();
+  ele_bs_dxy -> clear();
+  ele_bs_dxy_e -> clear();
+  ele_bs_dxy_sig -> clear();
   ele_cov_pos_def -> clear();
   ele_trkIsolation -> clear();
+  ele_sigmaietaieta -> clear();
   ele_trk_chi2     -> clear();
   ele_trk_ndof     -> clear();
+  ele_trk_prob     -> clear();
   //#ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
   //ESHandle<SetupData> pSetup;
   //iSetup.get<SetupRecord>().get(pSetup);
@@ -629,7 +571,6 @@ void BsToEMu::beginJob() {
   tree -> Branch("mcorr", &mcorr );
   tree -> Branch("pt", &pt );
   tree -> Branch("eta", &eta );
-  tree -> Branch("rap", &rap );
   tree -> Branch("phi", &phi );
   tree -> Branch("charge", &charge );
   
@@ -652,17 +593,12 @@ void BsToEMu::beginJob() {
   tree -> Branch("lxy", &lxy );
   tree -> Branch("lxy_err", &lxy_err );
   tree -> Branch("lxy_sig", &lxy_sig );
-  tree -> Branch("alpha3d", &alpha3d );
-  tree -> Branch("l3d", &l3d );
-  tree -> Branch("l3d_err", &l3d_err );
-  tree -> Branch("l3d_sig", &l3d_sig );
 
   tree -> Branch("pfmu", &pfmu);
   tree -> Branch("globalMu", &globalMu);
 
   tree -> Branch("mu_pt", &mu_pt );
   tree -> Branch("mu_eta", &mu_eta );
-  tree -> Branch("mu_rap", &mu_rap );
   tree -> Branch("mu_phi", &mu_phi );
   tree -> Branch("mu_e", &mu_e );
   tree -> Branch("mu_mass", &mu_mass );
@@ -678,17 +614,17 @@ void BsToEMu::beginJob() {
   tree -> Branch("mu_dz", &mu_dz );
   tree -> Branch("mu_dz_e", &mu_dz_e );
   tree -> Branch("mu_dz_sig", &mu_dz_sig );
-  tree -> Branch("mu_pv_dxy", &mu_pv_dxy );
-  tree -> Branch("mu_pv_dxy_e", &mu_pv_dxy_e );
-  tree -> Branch("mu_pv_dxy_sig", &mu_pv_dxy_sig );
+  tree -> Branch("mu_bs_dxy", &mu_bs_dxy );
+  tree -> Branch("mu_bs_dxy_e", &mu_bs_dxy_e );
+  tree -> Branch("mu_bs_dxy_sig", &mu_bs_dxy_sig );
   tree -> Branch("mu_cov_pos_def", &mu_cov_pos_def );
   tree -> Branch("mu_trkIsolation", &mu_trkIsolation );
   tree -> Branch("mu_trk_chi2", &mu_trk_chi2 );
   tree -> Branch("mu_trk_ndof", &mu_trk_ndof );
+  tree -> Branch("mu_trk_prob", &mu_trk_prob );
 
   tree -> Branch("ele_pt", &ele_pt );
   tree -> Branch("ele_eta", &ele_eta ); 
-  tree -> Branch("ele_rap", &ele_rap );
   tree -> Branch("ele_phi", &ele_phi );
   tree -> Branch("ele_e", &ele_e );
   tree -> Branch("ele_mass", &ele_mass );
@@ -696,6 +632,8 @@ void BsToEMu::beginJob() {
   tree -> Branch("ele_id_iso_wp90", &ele_id_iso_wp90 );
   tree -> Branch("ele_id_iso_wp80", &ele_id_iso_wp80 );
   tree -> Branch("ele_id_iso_wpLoose", &ele_id_iso_wpLoose );
+  tree -> Branch("ele_id_iso", &ele_id_iso );
+  tree -> Branch("ele_id_noIso", &ele_id_noIso );
   tree -> Branch("ele_id_noIso_wp90", &ele_id_noIso_wp90 );
   tree -> Branch("ele_id_noIso_wp80", &ele_id_noIso_wp80 );
   tree -> Branch("ele_id_noIso_wpLoose", &ele_id_noIso_wpLoose );
@@ -705,13 +643,15 @@ void BsToEMu::beginJob() {
   tree -> Branch("ele_dz", &ele_dz );
   tree -> Branch("ele_dz_e", &ele_dz_e );
   tree -> Branch("ele_dz_sig", &ele_dz_sig );
-  tree -> Branch("ele_pv_dxy", &ele_pv_dxy );
-  tree -> Branch("ele_pv_dxy_e", &ele_pv_dxy_e );
-  tree -> Branch("ele_pv_dxy_sig", &ele_pv_dxy_sig );
+  tree -> Branch("ele_bs_dxy", &ele_bs_dxy );
+  tree -> Branch("ele_bs_dxy_e", &ele_bs_dxy_e );
+  tree -> Branch("ele_bs_dxy_sig", &ele_bs_dxy_sig );
   tree -> Branch("ele_cov_pos_def", &ele_cov_pos_def );
   tree -> Branch("ele_trkIsolation", &ele_trkIsolation );
+  tree -> Branch("ele_sigmaietaieta", &ele_sigmaietaieta );
   tree -> Branch("ele_trk_chi2", &ele_trk_chi2 );
   tree -> Branch("ele_trk_ndof", &ele_trk_ndof );
+  tree -> Branch("ele_trk_prob", &ele_trk_prob );
 }
 void BsToEMu::endJob() {
   tree -> GetDirectory()->cd();
