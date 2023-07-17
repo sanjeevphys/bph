@@ -67,7 +67,7 @@ void ntuple_data::Loop(){
   TH2F *h2_dEtavsMemu = new TH2F("h2_dEtavsMemu", "#Delta#eta vs M_{e#mu}", 50, 4, 7, 50, 0, 2 );
   TH2F *h2_dPhivsMemu = new TH2F("h2_dPhivsMemu", "#Delta#phi vs M_{e#mu}", 50, 4, 7, 50, 0, 2 );
   
-  auto f00 = TFile::Open("Bs2EMu_data_hist_gm_v2.root", "RECREATE");
+  auto f00 = TFile::Open("Bs2EMu_data_hist_gm_v3.root", "RECREATE");
   if (fChain == 0) return;
   Long64_t nentries = fChain->GetEntriesFast();
   Long64_t nbytes = 0, nb = 0;
@@ -76,33 +76,39 @@ void ntuple_data::Loop(){
     if (ientry < 0) break;
     nb = fChain->GetEntry(jentry);   nbytes += nb;
     if( !hlt_path ){ cout << "HLT not fired.\n"; continue;}
-    int i1, i2=0;
+    int i1, i2=999;
     TLorentzVector mu4, trg4, dif;
-    mu4.SetPtEtaPhiM(mu_pt->at(0), mu_eta->at(0), mu_phi->at(0), 0.0005109989461);
-    trg4.SetPtEtaPhiM(t_pt->at(0), t_eta->at(0), t_phi->at(0), 0.0005109989461);
+    trg4.SetPtEtaPhiM(t_pt->at(0), t_eta->at(0), t_phi->at(0), 0.10565837); // presently it is only for leading trigger object
     dif = mu4 - trg4;
     //cout <<  dif.Px() << '\t' << dif.Py() << '\t' << dif.Pt() << '\t' << mu_pt->at(0) - t_pt->at(0) << endl;
-    double dpT = fabs((dif.Pt())/mu_pt->at(0));
-    //double dpT = fabs((mu_pt->at(0)-t_pt->at(0))/mu_pt->at(0));
-    double detax = mu_eta->at(0)-t_eta->at(0);
-    double dphix = fabs(mu_phi->at(0)-t_phi->at(0));
-    if(dphix > M_PI) dphix =  2*M_PI - dphix;
-    double t_drx = sqrt(detax*detax+dphix*dphix);
-    for(i1 = 1; i1 < mu_eta->size(); i1++){
-      mu4.SetPtEtaPhiM(mu_pt->at(i1), mu_eta->at(i1), mu_phi->at(i1), 0.0005109989461);
+    double dpT = 999, t_dr=999;
+    double t_drx = 999;
+    for(i1 = 0; i1 < mu_eta->size(); i1++){
+      mu4.SetPtEtaPhiM(mu_pt->at(i1), mu_eta->at(i1), mu_phi->at(i1), 0.10565837);
       dif = mu4 - trg4;
-      double dpT1 = fabs((dif.Pt())/mu_pt->at(i1));
+      double dpT1 = dif.Pt()/mu_pt->at(i1);
       //double dpT1 = fabs((mu_pt->at(i1)-t_pt->at(0))/mu_pt->at(i1));
+      double deta1 = mu_eta->at(i1)-t_eta->at(0);
+      double dphi1 = fabs(mu_phi->at(i1)-t_phi->at(0));
+
+      if(dphi1 > M_PI) dphi1 =  2*M_PI - dphi1;
       if(dpT > dpT1){
 	dpT = dpT1;
-	cout << "DeltapT/pT can also be applied independent of dR cut.\n";
-	double deta1 = mu_eta->at(i1)-t_eta->at(0);
-	double dphi1 = fabs(mu_phi->at(1)-t_phi->at(0));
-	if(dphi1 > M_PI) dphi1 =  2*M_PI - dphi1;
+	//cout << "DeltapT/pT can also be applied independent of dR cut.\n";
 	t_drx = sqrt(deta1*deta1+dphi1*dphi1);
       }
+      
+      double t_dr1 = sqrt(deta1*deta1+dphi1*dphi1);
+      if(t_dr > t_dr1){
+        i2=i1; t_dr=t_dr1;
+        //cout << "Something tried to change.\n";
+      }
     }
-    if(t_drx == 5 ) continue;
+    if( i2 == 999 ) cout << " This line only for testing i2 values...\n";
+    
+    if( dpT > 100 ) continue;
+    if( t_dr > 100 ) continue;
+    
     if( dpT < 0.05 ){
       ha_trg_dr1  -> Fill(t_drx);
       ha_trg_dr2  -> Fill(t_drx);
@@ -113,20 +119,6 @@ void ntuple_data::Loop(){
       hb_trg_dr2  -> Fill(t_drx);
       hb_trg_dr3  -> Fill(t_drx);
       hb_trg_dr4  -> Fill(t_drx);
-    }
-    double deta = mu_eta->at(0)-t_eta->at(0);
-    double dphi = fabs(mu_phi->at(0)-t_phi->at(0));
-    if(dphi > M_PI) dphi =  2*M_PI - dphi;
-    double t_dr = sqrt(deta*deta+dphi*dphi);
-    for(i1 = 1; i1 < mu_eta->size(); i1++){
-      double deta1 = mu_eta->at(i1)-t_eta->at(0);
-      double dphi1 = fabs(mu_phi->at(1)-t_phi->at(0));
-      if(dphi1 > M_PI) dphi1 =  2*M_PI - dphi1;
-      double t_dr1 = sqrt(deta1*deta1+dphi1*dphi1);
-      if(t_dr > t_dr1){
-        i2=i1; t_dr=t_dr1;deta=deta1;dphi=dphi1;
-        cout << "Something tried to change.\n";
-      }
     }
 
     h1_trg_dr -> Fill(t_dr);
