@@ -113,6 +113,7 @@ private:
   std::vector<float> *ele_id_iso_wp90, *ele_id_iso_wp80, *ele_id_iso_wpLoose, *ele_id_iso, *ele_id_noIso, *ele_id_noIso_wp90, *ele_id_noIso_wp80, *ele_id_noIso_wpLoose, *ele_dxy, *ele_dxy_e, *ele_dxy_sig, *ele_dz, *ele_dz_e, *ele_dz_sig, *ele_bs_dxy, *ele_bs_dxy_e, *ele_bs_dxy_sig, *ele_cov_pos_def, *ele_trkIsolation;
   std::vector<float> *mu_trk_chi2, *mu_trk_ndof, *mu_trk_prob;
   std::vector<float> *ele_sigmaietaieta, *ele_trk_chi2, *ele_trk_ndof, *ele_trk_prob;
+  std::vector<float> *charge_pt;
   TH1F *h1_eff00 = new TH1F("h1_eff00", "hlt is passed", 10, 0, 10);
   TH1F *h1_eff01 = new TH1F("h1_eff01", "muon pt and eta", 10, 0, 10);
   TH1F *h1_eff02 = new TH1F("h1_eff02", "muon best track", 10, 0, 10);
@@ -186,7 +187,8 @@ BsToEMu::BsToEMu(const edm::ParameterSet& iConfig):
   mass(0), mcorr(0), pt(0), eta(0), phi(0), charge(0), dr_mu(0), dr_ele(0), pv_x(0), pv_y(0), pv_z(0), bs_x0(0), bs_y0(0), bs_z0(0), bs_x(0), bs_y(0), vx(0), vy(0), vz(0), vtx_chi2(0), vtx_prob(0), cos2d(0), lxy(0), lxy_err(0), lxy_sig(0),
   mu_pt(0), mu_eta(0), mu_phi(0), mu_e(0), mu_mass(0), mu_charge(0), mu_id_loose(0), mu_id_soft(0), mu_id_medium(0), mu_id_tight(0), mu_id_soft_mva(0), mu_dxy(0), mu_dxy_e(0), mu_dxy_sig(0), mu_dz(0), mu_dz_e(0), mu_dz_sig(0), mu_bs_dxy(0), mu_bs_dxy_e(0), mu_bs_dxy_sig(0), mu_cov_pos_def(0), mu_trkIsolation(0), ele_pt(0), ele_eta(0), ele_phi(0), ele_e(0), ele_mass(0), ele_charge(0), ele_id_iso_wp90(0), ele_id_iso_wp80(0), ele_id_iso_wpLoose(0), ele_id_iso(0), ele_id_noIso(0), ele_id_noIso_wp90(0), ele_id_noIso_wp80(0), ele_id_noIso_wpLoose(0), ele_dxy(0), ele_dxy_e(0), ele_dxy_sig(0), ele_dz(0), ele_dz_e(0), ele_dz_sig(0), ele_bs_dxy(0), ele_bs_dxy_e(0), ele_bs_dxy_sig(0), ele_cov_pos_def(0), ele_trkIsolation(0),
   mu_trk_chi2(0), mu_trk_ndof(0), mu_trk_prob(0),
-  ele_sigmaietaieta(0), ele_trk_chi2(0), ele_trk_ndof(0), ele_trk_prob(0)
+  ele_sigmaietaieta(0), ele_trk_chi2(0), ele_trk_ndof(0), ele_trk_prob(0),
+  charge_pt(0)
 {}
 
 BsToEMu::~BsToEMu(){}
@@ -250,6 +252,7 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
   //cout << "================================ Something started ======================================\n";
   unsigned int nn[20] = {0};
+  int test_event=event;
 
   static int nhlt = 10;
   const char *paths[nhlt] = { "HLT_Mu7_IP4"     ,
@@ -371,7 +374,8 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
     nn[3]++;
     //if( ! iMu -> isGlobalMuon() ) continue;
     //nn[4]++;
-    if( ! iMu -> isLooseMuon() ) continue;
+    //if( ! iMu -> isLooseMuon() ) continue;
+    if( ! iMu -> isMediumMuon() ) continue;
     nn[5]++;
     h1_mu_pt_4 -> Fill(iMu  -> pt());
     h1_mu_eta_4 -> Fill(iMu -> eta());
@@ -383,8 +387,8 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
       nn[9]++;
       h1_el_pt_1 -> Fill(iE -> pt());
       h1_el_eta_1 -> Fill(iE -> eta());
-      if( (iMu -> charge()) * (iE->charge()) == 1 ) continue;
-      nn[10]++;
+      //if( (iMu -> charge()) * (iE->charge()) == 1 ) continue;
+      //nn[10]++;
       
       h1_el_pt_2 -> Fill(iE -> pt());
       h1_el_eta_2 -> Fill(iE -> eta());
@@ -454,6 +458,15 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
       nn[15]++;
       h1_mass_2 -> Fill(bcand.M());
 
+      for(std::vector<pat::PackedCandidate>::const_iterator iPFS = pfs->begin(); iPFS != pfs->end(); ++iPFS){
+	if( test_event != event ) break;
+	if (iPFS -> charge() == 0 ) continue;
+	if (iPFS -> pt()< 1.) continue;
+	if (!iPFS -> hasTrackDetails()) continue;
+	if( (int)iPFS -> vertexRef().key() != pvIndex ) continue;
+	charge_pt -> push_back(iPFS -> pt());
+      }
+      test_event++;
       //cout << "*****************************************************\nOne round is done fully\n*******************************************\n";
       cos2d -> push_back( vtxCos );
 
@@ -647,6 +660,7 @@ void BsToEMu::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   ele_trk_chi2-> clear();
   ele_trk_ndof-> clear();
   ele_trk_prob -> clear();
+  charge_pt ->clear();
 
   //#ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
   //ESHandle<SetupData> pSetup;
@@ -749,6 +763,8 @@ void BsToEMu::beginJob() {
   tree -> Branch("ele_trk_chi2", &ele_trk_chi2 );
   tree -> Branch("ele_trk_ndof", &ele_trk_ndof );
   tree -> Branch("ele_trk_prob", &ele_trk_prob );
+
+  tree -> Branch("charge_pt", &charge_pt );
 }
 void BsToEMu::endJob() {
   tree -> GetDirectory()->cd();
