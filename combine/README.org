@@ -1,0 +1,22 @@
+* Details about directory
+- This directory includes few files named: =datacard.txt=, =displayDatacard.py= and two root files
+- =datacard.txt= is the datacard file. This is written for [[https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/v10.0.X/][Combine v10.0.X]]
+- =displayDatacard.py= is a python3 script, taken from [[https://github.com/ats2008][Aravind TS]].
+- =workspace_sig_c0.root= is signal pdf, this is input file for datacard.
+- =blind_workspace_bkg_c0.root= is background file. Here word blind is in name written to represent blinded region while making pdf.
+There are multiple ways used to test, but none worked for me.
+
+* How to run the above
+- This is tried in [[https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/v9.2.X/][v9.2.X]] and v10 bot.
+- To run in v9, I am using command: 
+
+#+begin_src shell
+  combine -t -1 nocat_datacard.txt -n .bs2emu_bdt_v0 -m 5.36688 \
+	  --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --cminDefaultMinimizerStrategy=0 \
+	  --cminDefaultMinimizerTolerance=0.0001  --expectSignal=0
+#+end_src
+
+But this is not optimising.
+- With v10, I am running the combine with same command. I wan to run it with simple options like: =ombine -t -1 nocat_datacard.txt -m 5.36688=
+  - Where I can give input file name and mass as input. =-t -1= is to blind and unblind results.
+- Neither way is working.
