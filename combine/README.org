@@ -6,7 +6,12 @@
 - =blind_workspace_bkg_c0.root= is background file. Here word blind is in name written to represent blinded region while making pdf.
 There are multiple ways used to test, but none worked for me.
 
-* How to run the above
+* How to run with v10
+After some suggestions at cms-talk, I have updated few things. In signal, I am using Double Sided Crystal Ball function, instead of two single sided Cryastall ball functions. Now this won't work with v9.2.X (older root version). Also it is suggested to use =--run blind= instead of =-t -1= in command line.
+- Command line to run =combine nocat_datacard.txt --run blind --rMin 100 --rMax 1000=
+- Above command looks like working, but with different values of =rMin= and =rMax=, output is different.
+
+* How to run the above (old)
 - This is tried in [[https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/v9.2.X/][v9.2.X]] and v10 bot.
 - To run in v9, I am using command: 
 
@@ -17,6 +22,6 @@ There are multiple ways used to test, but none worked for me.
 #+end_src
 
 But this is not optimising.
-- With v10, I am running the combine with same command. I wan to run it with simple options like: =ombine -t -1 nocat_datacard.txt -m 5.36688=
+- With v10, I am running the combine with same command. I wan to run it with simple options like: =combine -t -1 nocat_datacard.txt -m 5.36688=
   - Where I can give input file name and mass as input. =-t -1= is to blind and unblind results.
 - Neither way is working.
