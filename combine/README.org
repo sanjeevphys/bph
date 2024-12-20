@@ -8,7 +8,7 @@ There are multiple ways used to test, but none worked for me.
 
 * How to run with v10
 After some suggestions at cms-talk, I have updated few things. In signal, I am using Double Sided Crystal Ball function, instead of two single sided Cryastall ball functions. Now this won't work with v9.2.X (older root version). Also it is suggested to use =--run blind= instead of =-t -1= in command line.
-- Command line to run =combine nocat_datacard.txt --run blind --rMin 100 --rMax 1000=
+- Command line to run =combine datacard.txt --run blind --rMin 100 --rMax 1000=
 - Above command looks like working, but with different values of =rMin= and =rMax=, output is different.
 
 * How to run the above (old)
@@ -16,12 +16,12 @@ After some suggestions at cms-talk, I have updated few things. In signal, I am u
 - To run in v9, I am using command: 
 
 #+begin_src shell
-  combine -t -1 nocat_datacard.txt -n .bs2emu_bdt_v0 -m 5.36688 \
+  combine -t -1 datacard.txt -n .bs2emu_bdt_v0 -m 5.36688 \
 	  --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --cminDefaultMinimizerStrategy=0 \
 	  --cminDefaultMinimizerTolerance=0.0001  --expectSignal=0
 #+end_src
 
 But this is not optimising.
-- With v10, I am running the combine with same command. I wan to run it with simple options like: =combine -t -1 nocat_datacard.txt -m 5.36688=
+- With v10, I am running the combine with same command. I wan to run it with simple options like: =combine -t -1 datacard.txt -m 5.36688=
   - Where I can give input file name and mass as input. =-t -1= is to blind and unblind results.
 - Neither way is working.
