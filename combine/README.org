@@ -4,6 +4,9 @@
 - =displayDatacard.py= is a python3 script, taken from [[https://github.com/ats2008][Aravind TS]].
 - =workspace_sig_c0.root= is signal pdf, this is input file for datacard.
 - =blind_workspace_bkg_c0.root= is background file. Here word blind is in name written to represent blinded region while making pdf.
+- =workspace_sig_c1.root= is signal pdf, this is input file for datacard (updated with different BDT value).
+- =blind_workspace_bkg_c1.root= is background file. Here word blind is in name written to represent blinded region while making pdf (updated with different BDT value and unblinded).
+
 There are multiple ways used to test, but none worked for me.
 
 * How to run with v10
