@@ -1,0 +1,21 @@
+# Datacard example for combine tutorial 2023 (part 1)
+---------------------------------------------
+imax 1
+jmax 1
+kmax *
+---------------------------------------------
+
+shapes      Bs           Tag0      workspace_sig_c0.root            workspace_sig:model
+shapes      bkg_mass     Tag0      blind_workspace_bkg_c0.root      workspace_bkg:bkg
+shapes      data_obs     Tag0      blind_workspace_bkg_c0.root      workspace_bkg:BDTG_bkg
+
+---------------------------------------------
+bin             Tag0
+observation     -1
+---------------------------------------------
+bin             Tag0         Tag0
+process         Bs           bkg_mass
+process         0            1
+rate            0.433887     1.0
+---------------------------------------------
+uncert_tsf  lnN 0.9896/1.01
