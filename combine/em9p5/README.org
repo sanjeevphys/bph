@@ -1,1 +1,104 @@
 Electron and muon both are with $p_T>$ 9.5 GeV
+
+- =datacard1.root= is created using =datacard.txt= as follows
+#+begin_src exmaple
+---------------------------------------------
+imax 1
+jmax 1
+kmax *
+---------------------------------------------
+
+shapes      Bs           Tag0      workspace_sig.root      workspace_sig:model
+shapes      bkg_mass     Tag0      workspace_bkg.root      workspace_bkg:bkg
+shapes      data_obs     Tag0      workspace_bkg.root      workspace_bkg:BDTG_bkg
+
+---------------------------------------------
+bin             Tag0
+observation     -1
+---------------------------------------------
+bin             Tag0         Tag0
+process         Bs           bkg_mass
+process         0            1
+rate            142.315     1.0
+---------------------------------------------
+TSF             lnN     0.9896/1.01       -
+fsfu            lnN     0.965368/1.03463  -
+Lumi            lnN     1.015             -
+Tracking        lnN     1.023             -
+PU              lnN     1.017             -
+BDT             lnN     1.024             -
+Norm            lnN     1.030             -
+SigShape        lnN     1.001             -
+#+end_src
+
+- When I run this:
+
+#+begin_src shell
+$ combine datacard1.root --run blind
+ <<< Combine >>> 
+ <<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+ -- AsymptoticLimits ( CLs ) --
+
+Done in 0.00 min (cpu), 0.00 min (real)
+#+end_src
+
+- After changing the command: (included parameter =--rMax 1000= )
+#+begin_src shell
+combine datacard1.root --run blind --rMax 1000
+ <<< Combine >>> 
+ <<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+ -- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 2.0736
+Expected 16.0%: r < 2.1027
+Expected 50.0%: r < 2.1667
+Expected 84.0%: r < 2.2790
+Expected 97.5%: r < 2.4390
+
+Done in 0.00 min (cpu), 0.00 min (real)
+#+end_src
+
+- Few more changes are tested. When input signal strenght is multiplied by 10 then ( =rate    1423.15     1.0= )
+#+begin_src shell
+combine datacard2.root --run blind
+ <<< Combine >>> 
+ <<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+ -- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 0.0755
+Expected 16.0%: r < 0.0870
+Expected 50.0%: r < 0.1050
+Expected 84.0%: r < 0.1305
+Expected 97.5%: r < 0.1622
+
+Done in 0.01 min (cpu), 0.01 min (real)
+#+end_src
+
+- Multiply signal strength by 10 again ( =rate    14231.5     1.0= )
+#+begin_src shell
+combine datacard3.root --run blind
+ <<< Combine >>> 
+ <<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+ -- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 0.0144
+Expected 16.0%: r < 0.0148
+Expected 50.0%: r < 0.0161
+Expected 84.0%: r < 0.0179
+Expected 97.5%: r < 0.0203
+
+Done in 0.00 min (cpu), 0.00 min (real)
+#+end_src
